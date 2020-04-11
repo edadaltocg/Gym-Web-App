@@ -1,0 +1,15 @@
+{% extends "template.html" %}
+
+{% block content %}
+<div class="cards-list">
+    {% for key, value in cards %}
+        <div class="card 1" id={{ key }}>
+          <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" /> </div>
+          <div class="card_title title-white">
+            <p>{{ value }}</p>
+          </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
