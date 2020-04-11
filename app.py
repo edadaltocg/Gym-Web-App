@@ -20,18 +20,22 @@ mongo.init_app(app)
 @app.route("/")  # at the end point /
 def home():  # call method hello
     games = gm.Games()
-    dict_games = games.dict_names()
-    Cards = {
-        "list":[
-            {
-                "title": "title1"
-            },
-            {
-                "title": "title2"
-            }
-        ]
-    }
-    return render_template("index.html", title="Cards", cards=dict_games)
+    pack = games.dict_names()
+
+    return render_template("index.html", title="Cards", cards=pack)
+
+@app.route("/games/<game_id>")
+def game_view(game_id):
+    games = gm.Games()
+    list_of_game_types = games.get_games_from_key(game_id)
+    # TODO: Get descriptions
+    # TODO: JSON OBJECT WITH NAME AND DESCRIPTIONS
+    json_object = list_of_game_types
+    return render_template("game_menu.html", title=game_id.title(), game_id=game_id, games=json_object)
+
+@app.route("/games/<game_id>/<game_type>")
+def game_view(game_id, game_type):
+    return render_template("game.html", title=game_type)
 
 @app.route("/about")  # at the end point /
 def about():  # call method hello

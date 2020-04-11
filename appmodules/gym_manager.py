@@ -40,11 +40,11 @@ class Game:
 ####
 # Debug
 ####
-
-games = Games()
-dict_name = games.dict_names()
-for key, value in dict_name:
-    print(key, value)
+#
+# games = Games()
+# dict_name = games.dict_names()
+# for test in dict_name:
+#     print(test, dict_name[test])
 
 
 
