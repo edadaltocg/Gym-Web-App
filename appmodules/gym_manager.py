@@ -1,5 +1,7 @@
 import gym
 import numpy as np
+import cv2
+import json
 
 class Games:
     def __init__(self):
@@ -34,8 +36,101 @@ class Games:
         pass
 
 class Game:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, game_type, agent_id):
+        self.env = gym.make(game_type)
+        self.agent = self.choose_agent(agent_id)
+        self.human_wants_restart = False
+        self.human_sets_pause = False
+
+    def play(self, NUM_EPISODES=1000):
+        # Main method
+        state_n = self.env.reset()
+        reward_n = 0
+
+        for episode in range(NUM_EPISODES):
+            action_n = self.agent.get_action(state_n, reward_n)
+            state_n, reward_n, done, info = self.env.step(action_n)
+
+            if done:
+                break
+
+            # Render game image
+            frame = state_n
+            (flag, encodedImage) = cv2.imencode(".jpg", frame)
+            # ensure the frame was successfully encoded
+            if not flag:
+                continue
+            # yield the output frame in the byte format
+            # serve the encoded JPEG frame as a byte array that can be consumed
+            # by a web browser.
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(encodedImage) + b'\r\n')
+
+        self.env.close()
+
+
+    def choose_agent(self, agent):
+        if agent == 'random':
+            return RandomAgent(self.env)
+
+    def show_image(self, frame):
+        cv2.imshow("", frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    def frame_dimensions(self, frame):
+        im = cv2.imdecode(frame, cv2.IMREAD_COLOR)
+        height, width = im.shape
+        return json.dumps({"width": width, "height": height})
+
+    def image_resize(self, image, width=None, height=None, inter=cv2.INTER_AREA):
+        # initialize the dimensions of the image to be resized and
+        # grab the image size
+        dim = None
+        (h, w) = image.shape[:2]
+
+        # if both the width and height are None, then return the
+        # original image
+        if width is None and height is None:
+            return image
+
+        # check to see if the width is None
+        if width is None:
+            # calculate the ratio of the height and construct the
+            # dimensions
+            r = height / float(h)
+            dim = (int(w * r), height)
+
+        # otherwise, the height is None
+        else:
+            # calculate the ratio of the width and construct the
+            # dimensions
+            r = width / float(w)
+            dim = (width, int(h * r))
+
+        # resize the image
+        resized = cv2.resize(image, dim, interpolation=inter)
+
+        # return the resized image
+        return resized
+
+# Parent agent class
+class Agent:
+    def __init__(self, env):
+        self.env = env
+        self.ACTIONS = self.get_action_space()
+
+    def get_action_space(self):
+        if not hasattr(self.env.action_space, 'n'):
+            raise Exception('Keyboard agent only supports discrete action spaces')
+        return self.env.action_space.n
+
+class RandomAgent(Agent):
+    def __init__(self, env):
+        super().__init__(env)
+
+    def get_action(self, state_n, reward_n):
+        return self.env.action_space.sample()
 
 ####
 # Debug

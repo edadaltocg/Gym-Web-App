@@ -1,11 +1,12 @@
 '''
     The entry & exit point to our application
 '''
-from flask import Flask, render_template  # import flask
+from flask import Flask, render_template, Response  # import flask
 from database.db import MONGO_URI
 from database.db import mongo
 from database.models import models_blueprint
 import appmodules.gym_manager as gm
+from appmodules.webstreaming import generate
 
 app = Flask(__name__)  # create an app instance
 app.register_blueprint(models_blueprint)
@@ -33,9 +34,25 @@ def game_view(game_id):
     json_object = list_of_game_types
     return render_template("game_menu.html", title=game_id.title(), game_id=game_id, games=json_object)
 
+#TODO: choose agent page route
 @app.route("/games/<game_id>/<game_type>")
-def game_view(game_id, game_type):
-    return render_template("game.html", title=game_type)
+def choose_agent_for_game(game_id, game_type):
+    return "Agents"
+
+@app.route("/games/<game_id>/<game_type>/<agent_id>")
+def play_game_page(game_id, game_type, agent_id):
+    return render_template("game.html", title=game_type, \
+                           game_type=game_type, agent_id=agent_id)
+
+# TEST
+@app.route("/gamefeed/<game_type>/<agent_id>")
+def game_feed(game_type, agent_id):
+    # return the response generated along with the specific media
+    # type (mime type)
+    game = gm.Game(game_type, agent_id)
+    return Response(game.play(),\
+                    mimetype="multipart/x-mixed-replace; boundary=frame")
+
 
 @app.route("/about")  # at the end point /
 def about():  # call method hello
