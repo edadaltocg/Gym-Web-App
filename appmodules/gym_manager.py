@@ -14,6 +14,8 @@ class Games:
                      'private_eye', 'qbert', 'riverraid', 'road_runner', 'robotank', 'seaquest', 'skiing',
                      'solaris', 'space_invaders', 'star_gunner', 'tennis', 'time_pilot', 'tutankham', 'up_n_down',
                      'venture', 'video_pinball', 'wizard_of_wor', 'yars_revenge', 'zaxxon']
+        self.not_supported_games = ['defender']
+        [self.game_list.remove(elem) for elem in self.not_supported_games]
         self.all_envs = gym.envs.registry.all()
         self.env_ids = [env_spec.id for env_spec in self.all_envs]
 
@@ -29,14 +31,13 @@ class Games:
     def get_games_from_key(self, key):
         name = self.dict_names()[key]
         filter = np.argwhere(np.array([name in id for id in self.env_ids]) == True).reshape(-1)
-        print(filter)
         return [self.env_ids[id] for id in filter]
 
     def get_name(self):
         pass
 
 class Game:
-    def __init__(self, game_type, agent_id):
+    def __init__(self, game_type, agent_id='random'):
         self.env = gym.make(game_type)
         self.agent = self.choose_agent(agent_id)
         self.human_wants_restart = False
@@ -73,10 +74,19 @@ class Game:
         if agent == 'random':
             return RandomAgent(self.env)
 
-    def show_image(self, frame):
-        cv2.imshow("", frame)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    def show_frame(self):
+        # cv2.imshow("", frame)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        self.env.reset()
+        frame, _, _, _ = self.env.step(self.env.action_space.sample())
+        return frame
+
+    def get_static_image(self):
+        self.env.reset()
+        frame, _, _, _ = self.env.step(self.env.action_space.sample())
+        (flag, encodedImage) = cv2.imencode(".jpg", frame)
+        return flag, encodedImage
 
     def frame_dimensions(self, frame):
         im = cv2.imdecode(frame, cv2.IMREAD_COLOR)
@@ -131,6 +141,11 @@ class RandomAgent(Agent):
 
     def get_action(self, state_n, reward_n):
         return self.env.action_space.sample()
+
+class KeyboardAgent(Agent):
+    def __init__(self, env):
+        super().__init__(env)
+
 
 ####
 # Debug

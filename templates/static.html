@@ -8,6 +8,7 @@
     {% extends "template_test.html" %}
     {% block content %}
     <h1>Lets GO STATIC!!</h1>
+        {{ url_for('functions_blueprint.game_poster', game_id=key) }}
     {%  endblock %}
 </body>
 </html>

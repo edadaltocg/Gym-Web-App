@@ -5,11 +5,13 @@ from flask import Flask, render_template, Response  # import flask
 from database.db import MONGO_URI
 from database.db import mongo
 from database.models import models_blueprint
+from database.functions import functions_blueprint
 import appmodules.gym_manager as gm
 from appmodules.webstreaming import generate
 
 app = Flask(__name__)  # create an app instance
 app.register_blueprint(models_blueprint)
+app.register_blueprint(functions_blueprint)
 '''
     Configurations
 '''
@@ -44,7 +46,7 @@ def play_game_page(game_id, game_type, agent_id):
     return render_template("game.html", title=game_type, \
                            game_type=game_type, agent_id=agent_id)
 
-# TEST
+
 @app.route("/gamefeed/<game_type>/<agent_id>")
 def game_feed(game_type, agent_id):
     # return the response generated along with the specific media
@@ -71,6 +73,14 @@ def cards():
         ]
     }
     return render_template("cards.html", title="Cards", cards=Cards)
+
+
+@app.route("/draft")
+def draft():
+    pass
+    # return Response(, \
+    #                 mimetype="multipart/x-mixed-replace; boundary=frame")
+
 
 @app.route("/db")
 def show_db():
