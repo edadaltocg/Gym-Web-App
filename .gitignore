@@ -4,3 +4,8 @@ virtual/**
 /.idea
 .idea\**
 __pycache__/
+.idea/Gym-Web-App.iml
+.idea/misc.xml
+__pycache__/app.cpython-36.pyc
+.idea/workspace.xml
+*.pyc
