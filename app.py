@@ -44,6 +44,15 @@ def game_view(game_id):
                            game_id=game_id, games=json_object,\
                            description_dict=description_dict)
 
+@app.route("/games/<game_id>/random")
+def game_random(game_id):
+    # Play the v4 of the game only with random agent
+    game_type = game_id.title() + '-v4'
+    game = gm.Game(game_type)
+    agent_id = 'random'
+    return render_template("game.html", title=game_type, \
+                           game_type=game_type, agent_id=agent_id)
+
 @app.route("/description/<game_type>")
 def game_description(game_type):
     game = gm.Game(game_type)

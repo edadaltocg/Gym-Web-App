@@ -1,6 +1,8 @@
 {% extends "template.html" %}
 
 {% block content %}
-    <h1>Game</h1>
-    <img src="{{ url_for('game_feed', game_type=game_type, agent_id=agent_id) }}" width="300px">
-{%  endblock %}
+    <div class="game-player">
+        <h1>{{ game_type }} {{ agent_id.title() }} agent</h1>
+        <img src="{{ url_for('game_feed', game_type=game_type, agent_id=agent_id) }}" width="300px">
+    </div>
+{% endblock %}

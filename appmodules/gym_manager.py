@@ -50,7 +50,7 @@ class Game:
         state_n = self.env.reset()
         reward_n = 0
 
-        for episode in range(NUM_EPISODES):
+        while True:
             action_n = self.agent.get_action(state_n, reward_n)
             state_n, reward_n, done, info = self.env.step(action_n)
 
@@ -70,6 +70,7 @@ class Game:
                    bytearray(encodedImage) + b'\r\n')
 
         self.env.close()
+        return 'Game Over'
 
 
     def choose_agent(self, agent):
@@ -149,6 +150,7 @@ class Agent:
         self.env = env
         self.ACTIONS = self.get_action_space()
         self.agent_ids = ['random', 'keyboard']
+        self.baseline_code = 'https://github.com/openai/baselines/tree/master/'
 
     def get_action_space(self):
         if not hasattr(self.env.action_space, 'n'):
@@ -160,6 +162,7 @@ class RandomAgent(Agent):
         super().__init__(env)
         self.agent_id = 'random'
 
+
     def get_action(self, state_n, reward_n):
         return self.env.action_space.sample()
 
@@ -167,6 +170,19 @@ class KeyboardAgent(Agent):
     def __init__(self, env):
         super().__init__(env)
         self.agent_id = 'keyboard'
+
+class A2CAgent(Agent):
+    def __init__(self, env):
+        super().__init__(env)
+        self.agent_id = 'keyboard'
+
+
+class DeepQAgent(Agent):
+    def __init__(self, env):
+        super().__init__(env)
+        self.agent_id = 'deepq'
+
+
 
 
 ####
