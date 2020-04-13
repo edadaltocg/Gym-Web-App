@@ -2,22 +2,21 @@
 
 {% block content %}
 <div class="game-menu">
-
 </div>
 <div class="container">
     <table class="rwd-table">
     <tbody>
       <tr>
-        <th>Name</th>
+        <th>Agent</th>
         <th>Description</th>
       </tr>
-      {% for game in games %}
+      {% for agent in agents %}
       <tr>
         <td data-th="name">
-          <a href=/games/{{ game_id }}/{{ game }}>{{ game }}</a>
+          <a href=/games/{{ game_id }}/{{ game_type }}/{{ agent }}>{{ agent }}</a>
         </td>
         <td data-th="description">
-          {{ description_dict[game] }}
+          {{ description_dict }}
         </td>
       </tr>
     {% endfor %}

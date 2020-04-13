@@ -7,6 +7,7 @@ from database.db import mongo
 from database.models import models_blueprint
 from database.functions import functions_blueprint
 import appmodules.gym_manager as gm
+from bson.json_util import dumps
 from appmodules.webstreaming import generate
 
 app = Flask(__name__)  # create an app instance
@@ -25,21 +26,39 @@ def home():  # call method hello
     games = gm.Games()
     pack = games.dict_names()
 
-    return render_template("index.html", title="Cards", cards=pack)
+    return render_template("index.html", title="Home", cards=pack)
 
 @app.route("/games/<game_id>")
 def game_view(game_id):
     games = gm.Games()
     list_of_game_types = games.get_games_from_key(game_id)
-    # TODO: Get descriptions
-    # TODO: JSON OBJECT WITH NAME AND DESCRIPTIONS
-    json_object = list_of_game_types
-    return render_template("game_menu.html", title=game_id.title(), game_id=game_id, games=json_object)
+    description_dict = dict()
+    for game_type in list_of_game_types:
+        game = gm.Game(game_type)
+        description = game.get_description()
+        description = '\n'.join(map(str, description))
+        description_dict[game_type] = description
 
-#TODO: choose agent page route
+    json_object = list_of_game_types
+    return render_template("game_menu.html", title=game_id.title(),\
+                           game_id=game_id, games=json_object,\
+                           description_dict=description_dict)
+
+@app.route("/description/<game_type>")
+def game_description(game_type):
+    game = gm.Game(game_type)
+    description_list = game.get_description()
+    description_json = dumps(enumerate(description_list))
+    return Response(description_json)
+
 @app.route("/games/<game_id>/<game_type>")
 def choose_agent_for_game(game_id, game_type):
-    return "Agents"
+    description_dict = 0
+    agents = [0,1]
+    return render_template("agents.html", title="Choose Agent",\
+                           game_id=game_id, game_type=game_type,\
+                           agents=agents,\
+                           description_dict=description_dict)
 
 @app.route("/games/<game_id>/<game_type>/<agent_id>")
 def play_game_page(game_id, game_type, agent_id):

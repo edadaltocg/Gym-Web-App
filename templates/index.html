@@ -3,7 +3,7 @@
 {% block content %}
 <div class="cards-list">
     {% for key in cards %}
-        <a href=games/{{ key }} style="text-decoration: none;">
+        <a href="games/{{ key }}"; style="text-decoration: none;">
         <div class="card 1" id={{ key }}>
 
           <div class="card_image">
@@ -11,7 +11,7 @@
           </div>
 
           <div class="card_title title-white">
-            <p>{{ cards[key] }}</p>
+            <p><span>{{ cards[key] }}</span></p>
           </div>
         </div>
         </a>

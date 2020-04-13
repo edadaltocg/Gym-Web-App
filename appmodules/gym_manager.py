@@ -42,6 +42,8 @@ class Game:
         self.agent = self.choose_agent(agent_id)
         self.human_wants_restart = False
         self.human_sets_pause = False
+        self.game_type = game_type
+
 
     def play(self, NUM_EPISODES=1000):
         # Main method
@@ -124,11 +126,29 @@ class Game:
         # return the resized image
         return resized
 
+    def get_description(self):
+        subtypes = {'v0':"This is an older version.",
+                    'v4':"This is the Newest version.",
+                    'Deterministic':"Has a fixed frameskip of 4.",
+                    'NoFrameskip':"No frames are skipped.",
+                    'ram':"The observation is the RAM of the Atari machine, consisting of (only!) 128 bytes.",
+                    'without Deterministic or NoFrameskip': "Each action is repeatedly performed for a duration of k frames, where k is uniformly sampled from {2, 3, 4}."
+        }
+        game_description = []
+        for key in subtypes:
+            if key in self.game_type:
+                game_description.append(subtypes[key])
+        if ('Deterministic' and 'NoFrameskip') not in self.game_type:
+            game_description.append(subtypes['without Deterministic or NoFrameskip'])
+
+        return game_description
+
 # Parent agent class
 class Agent:
     def __init__(self, env):
         self.env = env
         self.ACTIONS = self.get_action_space()
+        self.agent_ids = ['random', 'keyboard']
 
     def get_action_space(self):
         if not hasattr(self.env.action_space, 'n'):
@@ -138,6 +158,7 @@ class Agent:
 class RandomAgent(Agent):
     def __init__(self, env):
         super().__init__(env)
+        self.agent_id = 'random'
 
     def get_action(self, state_n, reward_n):
         return self.env.action_space.sample()
@@ -145,6 +166,7 @@ class RandomAgent(Agent):
 class KeyboardAgent(Agent):
     def __init__(self, env):
         super().__init__(env)
+        self.agent_id = 'keyboard'
 
 
 ####
